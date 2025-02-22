@@ -1,0 +1,7 @@
+beautifulsoup4
+requests
+schedule
+fuzzywuzzy
+python-Levenshtein
+matplotlib
+flask
