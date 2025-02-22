@@ -27,7 +27,7 @@ def scrape_lazada_sg(search_query):
 
     try:
 
-        product_elements = driver.find_elements(By.CLASS_NAME, "Bm3ON")[:10]  
+        product_elements = driver.find_elements(By.CLASS_NAME, "Bm3ON")[:5]  
 
         if not product_elements:
             print("No products found.")

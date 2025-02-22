@@ -19,7 +19,7 @@ def scrape_amazon_sg(search_query):
     soup = BeautifulSoup(response.content, 'html.parser')
     products = []
 
-    results = soup.find_all('div', {'data-component-type': 's-search-result'})[:10]
+    results = soup.find_all('div', {'data-component-type': 's-search-result'})[:5]
     for item in results:
         try:
 
