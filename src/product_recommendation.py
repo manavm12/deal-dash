@@ -6,13 +6,12 @@ from scraper_lazada import scrape_lazada_sg
 import statistics
 import numpy as np
 
-products = []
-rank1_products = []
-rank2_products = []
-rank3_products = []
-
 def fetch_products(query):
-    global rank1_products,rank2_products,rank3_products,products
+    products = []
+    rank1_products = []
+    rank2_products = []
+    rank3_products = []
+
     amazon_products = scrape_amazon_sg(query)
     lazada_products = scrape_lazada_sg(query)
     ebay_products = scrape_ebay_sg(query)
@@ -27,7 +26,9 @@ def fetch_products(query):
                 rank2_products.append(product)
             case 3:
                 rank3_products.append(product)
-    return 0
+
+    return products, rank1_products, rank2_products, rank3_products
+
 
 def calculate_ideal_price(rank1_products, rank2_products, rank3_products):
     rank1_prices = []
@@ -72,7 +73,6 @@ def calculate_ideal_price(rank1_products, rank2_products, rank3_products):
         final_mean, final_sd = compute_stats(final_price_list)
         final_variation = final_sd / final_mean if final_mean != 0 else 0
     
-    print(final_price_list)
     return final_mean
 
 def compute_price_score(products, ideal_price):
@@ -95,8 +95,6 @@ def compute_price_score(products, ideal_price):
         else:
             product.price_score = 0
 
-    print(f"Max Deviation: {max_deviation}")
-    print(k)
 
 def furthest_item(price_list, mean):
     furthest_index = 0
@@ -148,7 +146,7 @@ def print_products(products):
 
 
 def recommend_products(query):
-    fetch_products(query)
+    products, rank1_products, rank2_products, rank3_products = fetch_products(query)
     ideal_price = calculate_ideal_price(rank1_products, rank2_products, rank3_products)
 
     compute_price_score(products, ideal_price)
@@ -157,8 +155,7 @@ def recommend_products(query):
     compute_final_score(products)
 
     products.sort(key=lambda product: product.final_score, reverse=True)
-
-    print_products(products)
+    return products
 
 if __name__ == "__main__":
     query = input("Enter a product to search: ")
