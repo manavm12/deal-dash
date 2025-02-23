@@ -52,7 +52,7 @@ def scrape_ebay_sg(search_query):
             image_url = img_tag.get("src") if img_tag else "No image found"
 
             cleaned_price = clean_price(price)
-            products.append(Product('Ebay', name, cleaned_price, link, image_url, rank))
+            products.append(Product('Ebay', name, cleaned_price, link, image_url, rank,0,0,0,0))
             rank += 1
         except Exception as e:
             print(f"Error extracting product data: {e}")

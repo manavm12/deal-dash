@@ -30,12 +30,24 @@ def scrape_amazon_sg(search_query):
 
     for item in results:
         try:
-            name_tag = item.h2
-            name = name_tag.text.strip() if name_tag else "Product name not found"
+            # Extract the first part of the name (Brand or Short Name)
+            name_part_1_tag = item.find("h2", class_="a-size-mini s-line-clamp-1")
+            name_part_1 = name_part_1_tag.get_text(strip=True) if name_part_1_tag else ""
 
+            # Extract the second part of the name (Detailed Description)
+            name_part_2_tag = item.find("h2", class_="a-size-base-plus a-spacing-none a-color-base a-text-normal")
+            name_part_2 = name_part_2_tag.get_text(strip=True) if name_part_2_tag else ""
+
+            # Concatenate both parts if available
+            name = f"{name_part_1} {name_part_2}".strip()
+            if not name:
+                name = "Product name not found"
+
+            # Extract product link
             link_tag = item.find('a', class_='a-link-normal', href=True)
             link = "https://www.amazon.sg" + link_tag['href'] if link_tag else "Link not available"
 
+            # Extract product price
             price_whole = item.find('span', class_='a-price-whole')
             price_fraction = item.find('span', class_='a-price-fraction')
             if price_whole and price_fraction:
@@ -47,14 +59,18 @@ def scrape_amazon_sg(search_query):
             else:
                 price = "Price not available"
 
+            # Extract product image URL
             image_tag = item.find('img', class_='s-image')
             image_url = image_tag['src'] if image_tag else "Image not available"
 
+            # Clean the price using the existing function
             cleaned_price = clean_price(price)
 
-            product = Product('Amazon', name, cleaned_price, link, image_url, rank)
+            # Create and append the product object
+            product = Product('Amazon', name, cleaned_price, link, image_url, rank, 0, 0, 0,0)
             products.append(product)
             rank += 1
+
         except Exception as e:
             print(f"Error extracting product data: {e}")
             continue

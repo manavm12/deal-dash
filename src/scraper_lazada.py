@@ -45,7 +45,7 @@ def scrape_lazada_sg(search_query):
                 link = product.find_element(By.TAG_NAME, "a").get_attribute("href")
                 image_url = product.find_element(By.TAG_NAME, "img").get_attribute("src")
                 cleaned_price = clean_price(price)
-                products.append(Product('Lazada', name, cleaned_price, link, image_url, rank))
+                products.append(Product('Lazada', name, cleaned_price, link, image_url, rank,0,0,0,0))
                 rank += 1
             except Exception as e:
                 print(f"Error extracting product data: {e}")
