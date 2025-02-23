@@ -5,3 +5,7 @@ fuzzywuzzy
 python-Levenshtein
 matplotlib
 flask
+transformers
+torch
+scikit-learn
+numpy
