@@ -1,5 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import requests
 from bs4 import BeautifulSoup
+from product import Product
+from utils.clean_price import clean_price
+
 
 def scrape_amazon_sg(search_query):
     headers = {
@@ -18,11 +25,11 @@ def scrape_amazon_sg(search_query):
 
     soup = BeautifulSoup(response.content, 'html.parser')
     products = []
-
     results = soup.find_all('div', {'data-component-type': 's-search-result'})[:5]
+    rank = 1
+
     for item in results:
         try:
-
             name_tag = item.h2
             name = name_tag.text.strip() if name_tag else "Product name not found"
 
@@ -32,43 +39,39 @@ def scrape_amazon_sg(search_query):
             price_whole = item.find('span', class_='a-price-whole')
             price_fraction = item.find('span', class_='a-price-fraction')
             if price_whole and price_fraction:
-                price = f"SGD {price_whole.text}{price_fraction.text}"
+                whole = price_whole.text.replace(',', '').strip()
+                fraction = price_fraction.text.strip()
+                if whole.endswith('.'):
+                    whole = whole.rstrip('.')
+                price = f"{whole}.{fraction}"
             else:
                 price = "Price not available"
-
-            delivery = item.find('span', class_='a-color-base a-text-bold')
-            delivery_time = delivery.text.strip() if delivery else "Delivery info not available"
 
             image_tag = item.find('img', class_='s-image')
             image_url = image_tag['src'] if image_tag else "Image not available"
 
-            deal_tag = item.find('div', class_='a-row a-size-base a-color-secondary')
-            deal_info = deal_tag.get_text(strip=True) if deal_tag else "No deal"
+            cleaned_price = clean_price(price)
 
-
-            products.append({
-                'name': name,
-                'price': price,
-                'link': link,
-                'delivery_time': delivery_time,
-                'image_url': image_url,
-                'deal_info': deal_info
-            })
-
+            product = Product('Amazon', name, cleaned_price, link, image_url, rank)
+            products.append(product)
+            rank += 1
         except Exception as e:
             print(f"Error extracting product data: {e}")
             continue
 
     return products
 
+
 if __name__ == "__main__":
     query = input("Enter a product to search on Amazon SG: ")
     results = scrape_amazon_sg(query)
-    for idx, product in enumerate(results, 1):
-        print(f"\nProduct {idx}:")
-        print(f"Name: {product['name']}")
-        print(f"Price: {product['price']}")
-        print(f"Link: {product['link']}")
-        print(f"Delivery Time: {product['delivery_time']}")
-        print(f"Image URL: {product['image_url']}")
-        print(f"Deal Info: {product['deal_info']}")
+    if results:
+        for idx, product in enumerate(results, 1):
+            print(f"\nProduct {idx}:")
+            print(f"Platform: {product.platform}")
+            print(f"Name: {product.name}")
+            print(f"Price: {product.price}")
+            print(f"Link: {product.link}")
+            print(f"Image URL: {product.image_url}")
+    else:
+        print("No products found or there was an error scraping data.")
