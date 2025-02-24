@@ -8,20 +8,21 @@ st.set_page_config(
 )
 
 # Custom CSS for better aesthetics
+# Custom CSS for better aesthetics with adjusted sizes
 st.markdown("""
     <style>
         body {
             background-color: #f5f5f5;
         }
         .title {
-            font-size: 3em;
+            font-size: 2.5em;
             font-weight: bold;
             text-align: center;
             color: #333333;
             margin-bottom: 20px;
         }
         .subheader {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: 600;
             color: #444444;
             margin-top: 30px;
@@ -34,17 +35,17 @@ st.markdown("""
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .product-name {
-            font-size: 1.5em;  /* Increased size */
+            font-size: 1.1em;  /* Slightly larger than before */
             font-weight: 600;
             color: #333333;
         }
         .price {
-            font-size: 2em;
+            font-size: 1.1em;  /* Slightly larger */
             font-weight: bold;
             color: #1f77b4;
         }
         .platform {
-            font-size: 1.8em;
+            font-size: 1.2em;  /* Medium size for balance */
             font-weight: 600;
             color: #228B22;
         }
