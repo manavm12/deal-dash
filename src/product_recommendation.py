@@ -1,5 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer
 from scraper_amazon import scrape_amazon_sg
 from scraper_ebay import scrape_ebay_sg
 from scraper_lazada import scrape_lazada_sg
@@ -108,13 +109,15 @@ def furthest_item(price_list, mean):
     return furthest_index
 
 def compute_similarity_score(products, query):
-    corpus = [query.lower()] + [product.name.lower() for product in products]  
-    vectorizer = TfidfVectorizer().fit_transform(corpus)
-    vectors = vectorizer.toarray()
+    model = SentenceTransformer('all-MiniLM-L6-v2')  
 
-    query_vector = vectors[0].reshape(1, -1)
-    product_vectors = vectors[1:]
-    similarities = cosine_similarity(query_vector, product_vectors)[0]
+    corpus = [query] + [product.name for product in products]
+    embeddings = model.encode(corpus)
+
+    query_embedding = embeddings[0].reshape(1, -1)
+    product_embeddings = embeddings[1:]
+
+    similarities = cosine_similarity(query_embedding, product_embeddings)[0]
 
     for product, similarity in zip(products, similarities):
         product.similarity_score = similarity
